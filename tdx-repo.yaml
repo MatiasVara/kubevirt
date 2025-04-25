@@ -1,0 +1,6 @@
+repositories:
+- arch: x86_64
+  baseurl: https://buildlogs.centos.org/centos/9-stream/virt/x86_64/tdx-devel/
+  name: tdx-build
+  gpgcheck: 0
+  repo_gpgcheck: 0

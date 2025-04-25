@@ -59,6 +59,7 @@ func (vr *VolumeRenderer) Mounts() []k8sv1.VolumeMount {
 		mountPath("ephemeral-disks", vr.ephemeralDiskDir),
 		mountPathWithPropagation(containerDisks, vr.containerDiskDir, k8sv1.MountPropagationHostToContainer),
 		mountPath("libvirt-runtime", "/var/run/libvirt"),
+		mountPath("qgs", "/var/run/tdx-qgs"),
 		mountPath("sockets", filepath.Join(vr.virtShareDir, "sockets")),
 	}
 	return append(volumeMounts, vr.podVolumeMounts...)
@@ -69,6 +70,7 @@ func (vr *VolumeRenderer) Volumes() []k8sv1.Volume {
 		emptyDirVolume("private"),
 		emptyDirVolume("public"),
 		emptyDirVolume("sockets"),
+		emptyDirVolume("qgs"),
 		emptyDirVolume(virtBinDir),
 		emptyDirVolume("libvirt-runtime"),
 		emptyDirVolume("ephemeral-disks"),

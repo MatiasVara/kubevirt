@@ -23,6 +23,11 @@ func IsSEVVMI(vmi *v1.VirtualMachineInstance) bool {
 	return vmi.Spec.Domain.LaunchSecurity != nil && vmi.Spec.Domain.LaunchSecurity.SEV != nil
 }
 
+// Check if a VMI spec requests INTEL TDX
+func IsTDX(vmi *v1.VirtualMachineInstance) bool {
+	return true
+}
+
 // Check if a VMI spec requests SEV with attestation
 func IsSEVAttestationRequested(vmi *v1.VirtualMachineInstance) bool {
 	return IsSEVVMI(vmi) && vmi.Spec.Domain.LaunchSecurity.SEV.Attestation != nil

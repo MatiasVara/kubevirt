@@ -3484,15 +3484,18 @@ func getDefaultVirtHandlerDaemonSet(namespace string, config *util.KubeVirtDeplo
 		"",
 		config.GetLauncherVersion(),
 		config.GetPrHelperVersion(),
+		config.GetQGSLauncherVersion(),
 		config.VirtHandlerImage,
 		config.VirtLauncherImage,
 		config.PrHelperImage,
 		config.SidecarShimImage,
+		config.QGSLauncherImage,
 		config.GetImagePullPolicy(),
 		config.GetImagePullSecrets(),
 		nil,
 		config.GetVerbosity(),
 		config.GetExtraEnv(),
+		false,
 		false)
 }
 

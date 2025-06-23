@@ -80,6 +80,7 @@ const VhostNetDevice = "devices.kubevirt.io/vhost-net"
 const SevDevice = "devices.kubevirt.io/sev"
 const VhostVsockDevice = "devices.kubevirt.io/vhost-vsock"
 const PrDevice = "devices.kubevirt.io/pr-helper"
+const QGSDevice = "devices.kubevirt.io/qgs"
 
 const debugLogs = "debugLogs"
 const logVerbosity = "logVerbosity"
@@ -1524,6 +1525,7 @@ func (t *templateService) VMIResourcePredicates(vmi *v1.VirtualMachineInstance, 
 			NewVMIResourceRule(util.IsHostDevVMI, WithHostDevices(vmi.Spec.Domain.Devices.HostDevices)),
 			NewVMIResourceRule(util.IsSEVVMI, WithSEV()),
 			NewVMIResourceRule(reservation.HasVMIPersistentReservation, WithPersistentReservation()),
+			NewVMIResourceRule(util.IsTDX, WithQGS()),
 		},
 	}
 }

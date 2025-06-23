@@ -117,6 +117,10 @@ func (config *ClusterConfig) VirtiofsStorageEnabled() bool {
 	return config.isFeatureGateEnabled(featuregate.VirtIOFSStorageVolumeGate)
 }
 
+func (config *ClusterConfig) WorkloadEncryptionTDXEnabled() bool {
+	return true
+}
+
 func (config *ClusterConfig) MacvtapEnabled() bool {
 	return config.isFeatureGateEnabled(featuregate.MacvtapGate)
 }

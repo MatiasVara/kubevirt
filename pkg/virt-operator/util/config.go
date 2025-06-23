@@ -56,6 +56,7 @@ const (
 	GsImageEnvName                            = "GS_IMAGE"
 	PrHelperImageEnvName                      = "PR_HELPER_IMAGE"
 	SidecarShimImageEnvName                   = "SIDECAR_SHIM_IMAGE"
+	QGSLauncherImageEnvName                   = "QGS_LAUNCHER_IMAGE"
 	RunbookURLTemplate                        = "RUNBOOK_URL_TEMPLATE"
 
 	// The below Shasum variables would be ignored if Image env vars are being used.
@@ -78,6 +79,7 @@ const (
 	// Deprecated, use PrHelperImageEnvName instead
 	PrHelperShasumEnvName    = "PR_HELPER_SHASUM"
 	SidecarShimShasumEnvName = "SIDECAR_SHIM_SHASUM"
+	QGSLauncherShasumEnvName = "QGS_LAUNCHER_SHASUM"
 	KubeVirtVersionEnvName   = "KUBEVIRT_VERSION"
 	// Deprecated, use TargetDeploymentConfig instead
 	TargetInstallNamespace = "TARGET_INSTALL_NAMESPACE"
@@ -156,6 +158,7 @@ type KubeVirtDeploymentConfig struct {
 	GsImage                            string `json:"GsImage,omitempty" optional:"true"`
 	PrHelperImage                      string `json:"PrHelperImage,omitempty" optional:"true"`
 	SidecarShimImage                   string `json:"SidecarShimImage,omitempty" optional:"true"`
+	QGSLauncherImage                   string `json:"QGSLauncherImage,omitempty" optional:"true"`
 
 	// the shasums of every image we use
 	VirtOperatorSha                  string `json:"virtOperatorSha,omitempty" optional:"true"`
@@ -169,6 +172,7 @@ type KubeVirtDeploymentConfig struct {
 	GsSha                            string `json:"gsSha,omitempty" optional:"true"`
 	PrHelperSha                      string `json:"prHelperSha,omitempty" optional:"true"`
 	SidecarShimSha                   string `json:"sidecarShimSha,omitempty" optional:"true"`
+	QGSLauncherSha                   string `json:"qgsLauncherSha,omitempty" optional:"true"`
 
 	// everything else, which can e.g. come from KubeVirt CR spec
 	AdditionalProperties map[string]string `json:"additionalProperties,omitempty" optional:"true"`
@@ -355,8 +359,9 @@ func getConfig(registry, tag, namespace string, additionalProperties map[string]
 	GsImage := envVarManager.Getenv(GsImageEnvName)
 	PrHelperImage := envVarManager.Getenv(PrHelperImageEnvName)
 	SidecarShimImage := envVarManager.Getenv(SidecarShimImageEnvName)
+	QGSLauncherImage := envVarManager.Getenv(QGSLauncherImageEnvName)
 
-	config := newDeploymentConfigWithTag(registry, imagePrefix, tag, namespace, operatorImage, apiImage, controllerImage, handlerImage, launcherImage, exportProxyImage, exportServerImage, synchronizationControllerImage, GsImage, PrHelperImage, SidecarShimImage, additionalProperties, passthroughEnv)
+	config := newDeploymentConfigWithTag(registry, imagePrefix, tag, namespace, operatorImage, apiImage, controllerImage, handlerImage, launcherImage, exportProxyImage, exportServerImage, synchronizationControllerImage, GsImage, PrHelperImage, SidecarShimImage, QGSLauncherImage, additionalProperties, passthroughEnv)
 	if skipShasums {
 		return config
 	}
@@ -372,8 +377,9 @@ func getConfig(registry, tag, namespace string, additionalProperties map[string]
 	gsSha := envVarManager.Getenv(GsEnvShasumName)
 	prHelperSha := envVarManager.Getenv(PrHelperShasumEnvName)
 	sidecarShimSha := envVarManager.Getenv(SidecarShimShasumEnvName)
+	qgsLauncherSha := envVarManager.Getenv(QGSLauncherShasumEnvName)
 	if operatorSha != "" && apiSha != "" && controllerSha != "" && handlerSha != "" && launcherSha != "" && kubeVirtVersion != "" {
-		config = newDeploymentConfigWithShasums(registry, imagePrefix, kubeVirtVersion, operatorSha, apiSha, controllerSha, handlerSha, launcherSha, exportProxySha, exportServerSha, synchronizationControllerSha, gsSha, prHelperSha, sidecarShimSha, namespace, additionalProperties, passthroughEnv)
+		config = newDeploymentConfigWithShasums(registry, imagePrefix, kubeVirtVersion, operatorSha, apiSha, controllerSha, handlerSha, launcherSha, exportProxySha, exportServerSha, synchronizationControllerSha, gsSha, prHelperSha, sidecarShimSha, qgsLauncherSha, namespace, additionalProperties, passthroughEnv)
 	}
 
 	return config
@@ -410,7 +416,7 @@ func GetPassthroughEnvWithEnvVarManager(envVarManager EnvVarManager) map[string]
 	return passthroughEnv
 }
 
-func newDeploymentConfigWithTag(registry, imagePrefix, tag, namespace, operatorImage, apiImage, controllerImage, handlerImage, launcherImage, exportProxyImage, exportServerImage, synchronizationControllerImage, gsImage, prHelperImage, sidecarShimImage string, kvSpec, passthroughEnv map[string]string) *KubeVirtDeploymentConfig {
+func newDeploymentConfigWithTag(registry, imagePrefix, tag, namespace, operatorImage, apiImage, controllerImage, handlerImage, launcherImage, exportProxyImage, exportServerImage, synchronizationControllerImage, gsImage, prHelperImage, sidecarShimImage, qgsLauncherImage string, kvSpec, passthroughEnv map[string]string) *KubeVirtDeploymentConfig {
 	c := &KubeVirtDeploymentConfig{
 		Registry:                           registry,
 		ImagePrefix:                        imagePrefix,
@@ -426,6 +432,7 @@ func newDeploymentConfigWithTag(registry, imagePrefix, tag, namespace, operatorI
 		GsImage:                            gsImage,
 		PrHelperImage:                      prHelperImage,
 		SidecarShimImage:                   sidecarShimImage,
+		QGSLauncherImage:                   qgsLauncherImage,
 		Namespace:                          namespace,
 		AdditionalProperties:               kvSpec,
 		PassthroughEnvVars:                 passthroughEnv,
@@ -434,7 +441,7 @@ func newDeploymentConfigWithTag(registry, imagePrefix, tag, namespace, operatorI
 	return c
 }
 
-func newDeploymentConfigWithShasums(registry, imagePrefix, kubeVirtVersion, operatorSha, apiSha, controllerSha, handlerSha, launcherSha, exportProxySha, exportServerSha, synchronizationControllerSha, gsSha, prHelperSha, sidecarShimSha, namespace string, additionalProperties, passthroughEnv map[string]string) *KubeVirtDeploymentConfig {
+func newDeploymentConfigWithShasums(registry, imagePrefix, kubeVirtVersion, operatorSha, apiSha, controllerSha, handlerSha, launcherSha, exportProxySha, exportServerSha, synchronizationControllerSha, gsSha, prHelperSha, sidecarShimSha, qgsLauncherSha, namespace string, additionalProperties, passthroughEnv map[string]string) *KubeVirtDeploymentConfig {
 	c := &KubeVirtDeploymentConfig{
 		Registry:                         registry,
 		ImagePrefix:                      imagePrefix,
@@ -450,6 +457,7 @@ func newDeploymentConfigWithShasums(registry, imagePrefix, kubeVirtVersion, oper
 		GsSha:                            gsSha,
 		PrHelperSha:                      prHelperSha,
 		SidecarShimSha:                   sidecarShimSha,
+		QGSLauncherSha:                   qgsLauncherSha,
 		Namespace:                        namespace,
 		AdditionalProperties:             additionalProperties,
 		PassthroughEnvVars:               passthroughEnv,
@@ -564,6 +572,13 @@ func (c *KubeVirtDeploymentConfig) GetPrHelperVersion() string {
 func (c *KubeVirtDeploymentConfig) GetSidecarShimVersion() string {
 	if c.UseShasums() {
 		return c.SidecarShimSha
+	}
+	return c.KubeVirtVersion
+}
+
+func (c *KubeVirtDeploymentConfig) GetQGSLauncherVersion() string {
+	if c.UseShasums() {
+		return c.QGSLauncherSha
 	}
 	return c.KubeVirtVersion
 }

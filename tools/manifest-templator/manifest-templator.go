@@ -74,6 +74,7 @@ type templateData struct {
 	GsSha                              string
 	PrHelperSha                        string
 	SidecarShimSha                     string
+	QGSLauncherSha                     string
 	RunbookURLTemplate                 string
 	PriorityClassSpec                  string
 	FeatureGates                       []string
@@ -91,6 +92,7 @@ type templateData struct {
 	GsImage                            string
 	PrHelperImage                      string
 	SidecarShimImage                   string
+	QGSLauncherImage                   string
 }
 
 func main() {
@@ -121,6 +123,7 @@ func main() {
 	gsSha := flag.String("gs-sha", "", "")
 	prHelperSha := flag.String("pr-helper-sha", "", "")
 	sidecarShimSha := flag.String("sidecar-shim-sha", "", "")
+	qgsLauncherSha := flag.String("qgs-launcher-sha", "", "")
 	runbookURLTemplate := flag.String("runbook-url-template", "", "")
 	featureGates := flag.String("feature-gates", "", "")
 	infraReplicas := flag.Uint("infra-replicas", 0, "")
@@ -136,6 +139,7 @@ func main() {
 	gsImage := flag.String("gs-image", "", "custom image for gs. "+customImageExample)
 	prHelperImage := flag.String("pr-helper-image", "", "custom image for pr-helper. "+customImageExample)
 	sidecarShimImage := flag.String("sidecar-shim-image", "", "custom image for sidecar-shim. "+customImageExample)
+	qgsLauncherImage := flag.String("qgs-launcher-image", "", "custom image for qgs. "+customImageExample)
 
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	pflag.CommandLine.ParseErrorsWhitelist.UnknownFlags = true
@@ -178,6 +182,7 @@ func main() {
 		data.GsSha = *gsSha
 		data.PrHelperSha = *prHelperSha
 		data.SidecarShimSha = *sidecarShimSha
+		data.QGSLauncherSha = *qgsLauncherSha
 		data.RunbookURLTemplate = *runbookURLTemplate
 		data.OperatorRules = getOperatorRules()
 		data.KubeVirtLogo = getKubeVirtLogo(*kubeVirtLogoPath)
@@ -197,6 +202,7 @@ func main() {
 		data.GsImage = *gsImage
 		data.PrHelperImage = *prHelperImage
 		data.SidecarShimImage = *sidecarShimImage
+		data.QGSLauncherImage = *qgsLauncherImage
 		if *featureGates != "" {
 			data.FeatureGates = strings.Split(*featureGates, ",")
 		}
@@ -241,6 +247,7 @@ func main() {
 		data.GsImage = "{{.GsImage}}"
 		data.PrHelperImage = "{{.PrHelperImage}}"
 		data.SidecarShimImage = "{{.SidecarShimImage}}"
+		data.QGSLauncherImage = "{{.QGSLauncherImage}}"
 	}
 
 	if *processFiles {
@@ -313,6 +320,7 @@ func getOperatorDeploymentSpec(data templateData, indentation int) string {
 		data.GsSha,
 		data.PrHelperSha,
 		data.SidecarShimSha,
+		data.QGSLauncherSha,
 		data.RunbookURLTemplate,
 		data.VirtApiImage,
 		data.VirtControllerImage,
@@ -324,6 +332,7 @@ func getOperatorDeploymentSpec(data templateData, indentation int) string {
 		data.GsImage,
 		data.PrHelperImage,
 		data.SidecarShimImage,
+		data.QGSLauncherImage,
 		data.VirtOperatorImage,
 		v1.PullPolicy(data.ImagePullPolicy))
 

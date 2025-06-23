@@ -57,6 +57,7 @@ type NewClusterServiceVersionData struct {
 	GsSha                              string
 	PrHelperSha                        string
 	SidecarShimSha                     string
+	QGSLauncherSha                     string
 	RunbookURLTemplate                 string
 	Replicas                           int
 	IconBase64                         string
@@ -73,6 +74,7 @@ type NewClusterServiceVersionData struct {
 	GsImage                            string
 	PrHelperImage                      string
 	SidecarShimImage                   string
+	QGSLauncherImage                   string
 }
 
 type csvClusterPermissions struct {
@@ -178,6 +180,7 @@ func NewClusterServiceVersion(data *NewClusterServiceVersionData) (*csvv1.Cluste
 		data.GsSha,
 		data.PrHelperSha,
 		data.SidecarShimSha,
+		data.QGSLauncherSha,
 		data.RunbookURLTemplate,
 		data.VirtApiImage,
 		data.VirtControllerImage,
@@ -189,6 +192,7 @@ func NewClusterServiceVersion(data *NewClusterServiceVersionData) (*csvv1.Cluste
 		data.GsImage,
 		data.PrHelperImage,
 		data.SidecarShimImage,
+		data.QGSLauncherImage,
 		data.VirtOperatorImage,
 		v1.PullPolicy(data.ImagePullPolicy))
 

@@ -93,6 +93,7 @@ for arg in $args; do
         --namespace=${namespace} \
         --package-name=${package_name} \
         --pr-helper-sha=${PR_HELPER_SHA} \
+        --qgs-launcher-sha=${QGS_LAUNCHER_SHA} \
         --quay-repository=${QUAY_REPOSITORY} \
         --runbook-url-template=${runbook_url_template} \
         --sidecar-shim-sha=${SIDECAR_SHIM_SHA} \

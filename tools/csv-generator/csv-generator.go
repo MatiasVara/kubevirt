@@ -51,6 +51,7 @@ func main() {
 	gsSha := flag.String("gsSha", "", "libguestfs-tools image sha")
 	prHelperSha := flag.String("prHelperSha", "", "pr-helper image sha")
 	sidecarShimSha := flag.String("sidecarShimSha", "", "sidecar-shim image sha")
+	qgsLauncherSha := flag.String("qgsLauncherSha", "", "qgs-launcher image sha")
 	runbookURLTemplate := flag.String("", "", "")
 	kubeVirtLogo := flag.String("kubevirtLogo", "", "kubevirt logo data in base64")
 	csvVersion := flag.String("csvVersion", "", "the CSV version being generated")
@@ -68,6 +69,7 @@ func main() {
 	gsImage := flag.String("gs-image", "", "custom image for gs. "+customImageExample)
 	prHelperImage := flag.String("pr-helper-image", "", "custom image for pr-helper. "+customImageExample)
 	sidecarShimImage := flag.String("sidecar-shim-image", "", "custom image for sidecar-shim. "+customImageExample)
+	qgsLauncherImage := flag.String("qgs-launcher-image", "", "custom image for qgs launcher. "+customImageExample)
 
 	flag.Parse()
 
@@ -90,6 +92,7 @@ func main() {
 		GsSha:                              *gsSha,
 		PrHelperSha:                        *prHelperSha,
 		SidecarShimSha:                     *sidecarShimSha,
+		QGSLauncherSha:                     *qgsLauncherSha,
 		RunbookURLTemplate:                 *runbookURLTemplate,
 		ReplacesCsvVersion:                 *replacesCsvVersion,
 		IconBase64:                         *kubeVirtLogo,
@@ -106,6 +109,7 @@ func main() {
 		GsImage:                            *gsImage,
 		PrHelperImage:                      *prHelperImage,
 		SidecarShimImage:                   *sidecarShimImage,
+		QGSLauncherImage:                   *qgsLauncherImage,
 	}
 
 	operatorCsv, err := csv.NewClusterServiceVersion(&csvData)

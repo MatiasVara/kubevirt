@@ -228,6 +228,7 @@ virtsynchronizationcontroller_sha=$(getShasum ".VirtSynchronizationControllerSha
 gs_sha=$(getShasum ".GsSha")
 pr_helper_sha=$(getShasum ".PrHelperSha")
 sidecar_shim_sha=$(getShasum ".SidecarShimSha")
+qgs_launcher_sha=$(getShasum ".QGSLauncherSha")
 
 virtapi_rawsha=$(getRawShasum ".VirtApiSha")
 virtcontroller_rawsha=$(getRawShasum ".VirtControllerSha")
@@ -239,6 +240,7 @@ virtsynchronizationcontroller_rawsha=$(getRawShasum ".VirtSynchronizationControl
 gs_rawsha=$(getRawShasum ".GsSha")
 prhelper_rawsha=$(getRawShasum ".PrHelperSha")
 sidecar_shim_rawsha=$(getRawShasum ".SidecarShimSha")
+qgs_launcher_rawsha=$(getRawShasum ".QGSLauncherSha")
 
 # The generation code for CSV requires a valid semver to be used.
 # But we're trying to generate a template for a CSV here from code
@@ -267,6 +269,7 @@ ${KUBEVIRT_DIR}/tools/csv-generator/csv-generator \
     --pullPolicy={{.ImagePullPolicy}} \
     --replacesCsvVersion="$_fake_replaces_csv_version" \
     --sidecarShimSha="$sidecar_shim_rawsha" \
+    --qgsLauncherSha="$qgs_launcher_rawsha" \
     --verbosity={{.Verbosity}} \
     >${KUBEVIRT_DIR}/manifests/generated/operator-csv.yaml.in
 

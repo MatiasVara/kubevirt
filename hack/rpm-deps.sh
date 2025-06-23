@@ -171,6 +171,11 @@ sidecar_shim="
     python3
 "
 
+qgs_launcher="
+  tdx-qgs
+  sgx-mpa
+"
+
 # get latest repo data from repo.yaml
 bazel run \
     --config=${ARCHITECTURE} \
@@ -292,6 +297,15 @@ if [ -z "${SINGLE_ARCH}" ] || [ "${SINGLE_ARCH}" == "x86_64" ]; then
         $centos_main \
         $centos_extra \
         $sidecar_shim
+
+    bazel run \
+        --config=${ARCHITECTURE} \
+        //:bazeldnf -- rpmtree \
+        --public --nobest \
+        --name qgs-launcher_x86_64 \
+        --basesystem ${BASESYSTEM} \
+        ${bazeldnf_repos} \
+        $qgs_launcher
 
     # remove all RPMs which are no longer referenced by a rpmtree
     bazel run \

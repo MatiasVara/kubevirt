@@ -1397,6 +1397,8 @@ spec:
                   value: {{if .PrHelperSha}}{{.PrHelperSha}}{{end}}
                 - name: SIDECAR_SHIM_SHASUM
                   value: {{if .SidecarShimSha}}{{.SidecarShimSha}}{{end}}
+                - name: QGS_LAUNCHER_SHASUM
+                  value: {{if .QGSLauncherSha}}{{.QGSLauncherSha}}{{end}}
                 - name: KUBEVIRT_VERSION
                   value: {{.DockerTag}}
                 image: {{.DockerPrefix}}/virt-operator{{if .VirtOperatorSha}}@{{.VirtOperatorSha}}{{else}}:{{.DockerTag}}{{end}}

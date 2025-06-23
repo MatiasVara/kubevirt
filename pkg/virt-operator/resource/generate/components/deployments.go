@@ -496,7 +496,7 @@ func NewControllerDeployment(namespace, repository, imagePrefix, controllerVersi
 
 // Used for manifest generation only
 func NewOperatorDeployment(namespace, repository, imagePrefix, version, verbosity, kubeVirtVersionEnv, virtApiShaEnv, virtControllerShaEnv, virtHandlerShaEnv, virtLauncherShaEnv, virtExportProxyShaEnv,
-	virtExportServerShaEnv, virtSynchronizationControllerSha, gsShaEnv, prHelperShaEnv, sidecarShimShaEnv, runbookURLTemplate, virtApiImageEnv, virtControllerImageEnv, virtHandlerImageEnv, virtLauncherImageEnv, virtExportProxyImageEnv, virtExportServerImageEnv, virtSynchronizationControllerImageEnv, gsImage, prHelperImage, sidecarShimImage,
+	virtExportServerShaEnv, virtSynchronizationControllerSha, gsShaEnv, prHelperShaEnv, sidecarShimShaEnv, qgsLauncherShaEnv, runbookURLTemplate, virtApiImageEnv, virtControllerImageEnv, virtHandlerImageEnv, virtLauncherImageEnv, virtExportProxyImageEnv, virtExportServerImageEnv, virtSynchronizationControllerImageEnv, gsImage, prHelperImage, sidecarShimImage, qgsLauncherImage,
 	image string, pullPolicy corev1.PullPolicy) *appsv1.Deployment {
 
 	const kubernetesOSLinux = "linux"
@@ -645,8 +645,8 @@ func NewOperatorDeployment(namespace, repository, imagePrefix, version, verbosit
 
 	envVars := generateVirtOperatorEnvVars(
 		virtApiShaEnv, virtControllerShaEnv, virtHandlerShaEnv, virtLauncherShaEnv, virtExportProxyShaEnv, virtExportServerShaEnv,
-		virtSynchronizationControllerSha, gsShaEnv, prHelperShaEnv, sidecarShimShaEnv, runbookURLTemplate, virtApiImageEnv, virtControllerImageEnv, virtHandlerImageEnv, virtLauncherImageEnv, virtExportProxyImageEnv,
-		virtExportServerImageEnv, virtSynchronizationControllerImageEnv, gsImage, prHelperImage, sidecarShimImage, kubeVirtVersionEnv,
+		virtSynchronizationControllerSha, gsShaEnv, prHelperShaEnv, sidecarShimShaEnv, qgsLauncherShaEnv, runbookURLTemplate, virtApiImageEnv, virtControllerImageEnv, virtHandlerImageEnv, virtLauncherImageEnv, virtExportProxyImageEnv,
+		virtExportServerImageEnv, virtSynchronizationControllerImageEnv, gsImage, prHelperImage, sidecarShimImage, qgsLauncherImage, kubeVirtVersionEnv,
 	)
 
 	if envVars != nil {
@@ -873,8 +873,8 @@ func NewPodDisruptionBudgetForDeployment(deployment *appsv1.Deployment) *policyv
 }
 
 func generateVirtOperatorEnvVars(virtApiShaEnv, virtControllerShaEnv, virtHandlerShaEnv, virtLauncherShaEnv, virtExportProxyShaEnv,
-	virtExportServerShaEnv, virtSynchronizationControllerShaEnv, gsShaEnv, prHelperShaEnv, sidecarShimShaEnv, runbookURLTemplate, virtApiImageEnv, virtControllerImageEnv, virtHandlerImageEnv, virtLauncherImageEnv, virtExportProxyImageEnv,
-	virtExportServerImageEnv, virtSynchronizationControllerImageEnv, gsImage, prHelperImage, sidecarShimImage, kubeVirtVersionEnv string) (envVars []corev1.EnvVar) {
+	virtExportServerShaEnv, virtSynchronizationControllerShaEnv, gsShaEnv, prHelperShaEnv, sidecarShimShaEnv, qgsLauncherShaEnv, runbookURLTemplate, virtApiImageEnv, virtControllerImageEnv, virtHandlerImageEnv, virtLauncherImageEnv, virtExportProxyImageEnv,
+	virtExportServerImageEnv, virtSynchronizationControllerImageEnv, gsImage, prHelperImage, sidecarShimImage, qgsLauncherImage, kubeVirtVersionEnv string) (envVars []corev1.EnvVar) {
 
 	addEnvVar := func(envVarName, envVarValue string) {
 		envVars = append(envVars, corev1.EnvVar{
@@ -947,6 +947,12 @@ func generateVirtOperatorEnvVars(virtApiShaEnv, virtControllerShaEnv, virtHandle
 		addEnvVar(operatorutil.SidecarShimImageEnvName, sidecarShimImage)
 	} else if sidecarShimShaEnv != "" {
 		addEnvVar(operatorutil.SidecarShimShasumEnvName, sidecarShimShaEnv)
+	}
+
+	if qgsLauncherImage != "" {
+		addEnvVar(operatorutil.QGSLauncherImageEnvName, qgsLauncherImage)
+	} else if qgsLauncherShaEnv != "" {
+		addEnvVar(operatorutil.QGSLauncherShasumEnvName, qgsLauncherShaEnv)
 	}
 
 	if kubeVirtVersionEnv != "" {

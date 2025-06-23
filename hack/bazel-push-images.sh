@@ -46,6 +46,7 @@ case ${ARCHITECTURE} in
     default_targets+="
         conformance
         pr-helper
+        qgs-launcher
         example-hook-sidecar
         example-disk-mutation-hook-sidecar
         example-cloudinit-hook-sidecar

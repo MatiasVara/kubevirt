@@ -44,3 +44,4 @@ VIRT_SYNCHRONIZATIONCONTROLLER_SHA=$(cat ${DIGESTS_DIR}/${ARCHITECTURE}/bazel-bi
 GS_SHA=$(cat ${DIGESTS_DIR}/${ARCHITECTURE}/bazel-bin/push-libguestfs-tools.digest)
 PR_HELPER_SHA=$(cat ${DIGESTS_DIR}/${ARCHITECTURE}/bazel-bin/push-pr-helper.digest)
 SIDECAR_SHIM_SHA=$(cat ${DIGESTS_DIR}/${ARCHITECTURE}/bazel-bin/push-sidecar-shim.digest)
+QGS_LAUNCHER_SHA=$(cat ${DIGESTS_DIR}/${ARCHITECTURE}/bazel-bin/push-qgs-launcher.digest)

@@ -27,6 +27,8 @@ const (
 	prVolumeName    = "pr-helper-socket-vol"
 	devDirVol       = "dev-dir"
 	SidecarShimName = "sidecar-shim"
+	QGSLauncherName = "qgs-launcher"
+	qgsVolumeName   = "qgs-socket-vol"
 	etcMultipath    = "etc-multipath"
 )
 
@@ -65,7 +67,7 @@ func RenderPrHelperContainer(image string, pullPolicy corev1.PullPolicy) corev1.
 	}
 }
 
-func NewHandlerDaemonSet(namespace, repository, imagePrefix, version, launcherVersion, prHelperVersion, sidecarShimVersion, productName, productVersion, productComponent, image, launcherImage, prHelperImage, sidecarShimImage string, pullPolicy corev1.PullPolicy, imagePullSecrets []corev1.LocalObjectReference, migrationNetwork *string, verbosity string, extraEnv map[string]string, enablePrHelper bool) *appsv1.DaemonSet {
+func NewHandlerDaemonSet(namespace, repository, imagePrefix, version, launcherVersion, prHelperVersion, sidecarShimVersion, qgsLauncherVersion, productName, productVersion, productComponent, image, launcherImage, prHelperImage, sidecarShimImage, qgsLauncherImage string, pullPolicy corev1.PullPolicy, imagePullSecrets []corev1.LocalObjectReference, migrationNetwork *string, verbosity string, extraEnv map[string]string, enablePrHelper bool, enableTDXQGS bool) *appsv1.DaemonSet {
 
 	deploymentName := VirtHandlerName
 	imageName := fmt.Sprintf("%s%s", imagePrefix, deploymentName)
@@ -349,6 +351,9 @@ func NewHandlerDaemonSet(namespace, repository, imagePrefix, version, launcherVe
 	if sidecarShimImage == "" {
 		sidecarShimImage = fmt.Sprintf("%s/%s%s%s", repository, imagePrefix, SidecarShimName, AddVersionSeparatorPrefix(sidecarShimVersion))
 	}
+	if qgsLauncherImage == "" {
+		qgsLauncherImage = fmt.Sprintf("%s/%s%s%s", repository, imagePrefix, QGSLauncherName, AddVersionSeparatorPrefix(qgsLauncherVersion))
+	}
 
 	if enablePrHelper {
 		directoryOrCreate := corev1.HostPathDirectoryOrCreate
@@ -374,6 +379,67 @@ func NewHandlerDaemonSet(namespace, repository, imagePrefix, version, launcherVe
 				},
 			}})
 		pod.Containers = append(pod.Containers, RenderPrHelperContainer(prHelperImage, pullPolicy))
+	}
+
+	if enableTDXQGS {
+		pod.InitContainers = append(pod.InitContainers, []corev1.Container{
+			{
+				Command: []string{
+					"/usr/sbin/mpa_registration",
+				},
+				Image: qgsLauncherImage,
+				Name:  "mpa-registering",
+				VolumeMounts: []corev1.VolumeMount{
+					{
+						Name:      "sys-host",
+						MountPath: "/sys",
+						ReadOnly:  true,
+					},
+				},
+				SecurityContext: &corev1.SecurityContext{
+					RunAsUser:  pointer.P(int64(0)),
+					Privileged: pointer.P(true),
+				},
+			},
+		}...)
+
+		container.VolumeMounts = append(container.VolumeMounts, corev1.VolumeMount{
+			Name:             qgsVolumeName,
+			MountPath:        "/var/run/tdx-qgs/",
+			MountPropagation: pointer.P(corev1.MountPropagationBidirectional),
+		})
+
+		pod.Volumes = append(pod.Volumes, corev1.Volume{
+			Name: qgsVolumeName,
+			VolumeSource: corev1.VolumeSource{
+				HostPath: &corev1.HostPathVolumeSource{
+					Path: "/var/run/tdx-qgs/",
+					Type: pointer.P(corev1.HostPathDirectoryOrCreate),
+				},
+			}}, corev1.Volume{
+			Name: "sys-host",
+			VolumeSource: corev1.VolumeSource{
+				HostPath: &corev1.HostPathVolumeSource{
+					Path: "/sys",
+				},
+			}})
+
+		pod.Containers = append(pod.Containers, corev1.Container{
+			Name:    QGSLauncherName,
+			Image:   qgsLauncherImage,
+			Command: []string{"/entrypoint.sh"},
+			VolumeMounts: []corev1.VolumeMount{
+				{
+					Name:             qgsVolumeName,
+					MountPath:        "/var/run/tdx-qgs/",
+					MountPropagation: pointer.P(corev1.MountPropagationBidirectional),
+				},
+			},
+			SecurityContext: &corev1.SecurityContext{
+				Privileged: pointer.P(true),
+			},
+			TerminationMessagePolicy: corev1.TerminationMessageFallbackToLogsOnError,
+		})
 	}
 	return daemonset
 
